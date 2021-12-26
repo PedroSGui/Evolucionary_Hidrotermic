@@ -82,7 +82,7 @@ class HidroTerm:
 if __name__ == '__main__':
     adam = HidroTerm() 
     #print(primogenito.score())
-    n_rep=5
+    n_rep=10
     n_gen=30
     pai=copy.copy(adam)
     
