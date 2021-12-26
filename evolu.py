@@ -3,20 +3,20 @@ import random
 import numpy as np
 import copy
 class HidroTerm:
-    def __init__(self):  
-        self.mu = 1000
-        self.n_pop=6
-        self.mu=0
-        self.sigma=10000
-        self.aflu = [20000,60000,70000,20000,10000,50000]
+    def __init__(self,mu,n_pop,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer):  
+        self.n_pop=n_pop
+        self.mu=mu
+        self.sigma=sigma
+        self.aflu = aflu
         self.aflu = np.array(self.aflu)
-        self.k = 10/3
-        self.maxTurb=80000
-        self.maxRes=150000
-        self.maxTer=80000
-        self.minTer=0
+        self.k = k
+        self.maxTurb=maxTurb
+        self.maxRes=maxRes
+        self.maxTer=maxTer
+        self.minTer=minTer
         #definção da parte hidrica
-        self.volTurb=[40000,40000,40000,40000,40000,0] #caso base
+        #self.volTurb=[0,55000,65000,0,60000,0] #caso base para 20mil iniciais
+        self.volTurb=[0,55000,65000,0,60000,0] #caso base
         self.volTurb=np.array(self.volTurb)
         
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
@@ -47,9 +47,10 @@ class HidroTerm:
         i=0
         for j in self.volTurb:
             curr_abu=self.aflu[i]+sobra
-            if (j >= 0 and j<=curr_abu and j<80000):
+            if (j >= 0 and j<=curr_abu and j<=80000):
                 sobra=curr_abu-j
             else:
+                #print(j,curr_abu)
                 sobra=curr_abu-j
                 penalidade=penalidade+100000000000000
             if curr_abu > 150000:
@@ -59,12 +60,12 @@ class HidroTerm:
                 #not sure if this is right
                 x=int(curr_abu*(10/3)/3600)
                 poupanca=x*custo_med
-                #custo=custo-poupanca
+                custo=custo-poupanca
             i=i+1
         
 
         score = int(custo + penalidade)
-        #print("O custo eh: ",custo_med)
+        #print("O score eh: ",score)
         return  score
 
     def mutate(self):
@@ -80,24 +81,35 @@ class HidroTerm:
     
             
 if __name__ == '__main__':
-    adam = HidroTerm() 
-    #print(primogenito.score())
-    n_rep=10
-    n_gen=30
+    n_pop=6
+    mu=0
+    sigma=10000
+    aflu = [20000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial
+    k = 10/3
+    maxTurb=80000
+    maxRes=150000
+    maxTer=80000
+    minTer=0
+
+    n_rep=100
+    n_gen=10
+
+    adam = HidroTerm(mu,n_pop,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer) 
     pai=copy.copy(adam)
-    
     for k in range(n_gen):
         filho=[copy.copy(pai) for i in range(n_rep)]
         #print(filho[3].mu)
         best_score=pai.score()
+        print("Score Pai: ",best_score,"\n\n")
         for i in range(n_rep):
             filho[i].mutate()
+            #print(filho[i].volTurb)
             ponto=filho[i].score()
             #print(ponto)
             if ponto < best_score:
                 pai=copy.copy(filho[i])
                 best_score=ponto
-        #print(pai.score())
+        
     print("\n\n",pai.volTurb)
-    print("\n\n",pai.powerAbu)
-    print(pai.powerTer)
+    #print("\n\n",pai.powerAbu)
+    #print(pai.powerTer)
