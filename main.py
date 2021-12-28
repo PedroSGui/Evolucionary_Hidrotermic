@@ -4,9 +4,23 @@ import numpy as np
 import copy
 
 #'''
+def bubble_sort(our_list):
+    has_swapped = True
+
+    num_of_iterations = 0
+
+    while(has_swapped):
+        has_swapped = False
+        for i in range(len(our_list) - num_of_iterations - 1):
+            if our_list[i] > our_list[i+1]:
+                # Swap
+                our_list[i], our_list[i+1] = our_list[i+1], our_list[i]
+                has_swapped = True
+        num_of_iterations += 1
+
 class Evolu:
-    def __init__(self,mu,n_pop,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
-        self.n_pop=n_pop
+    def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
+        self.n_timeStamps=n_timeStamps
         self.mu=mu
         self.sigma=sigma
         self.aflu = aflu
@@ -18,18 +32,22 @@ class Evolu:
         self.minTer=minTer
         #definção da parte hidrica
         #self.volTurb=[0,55000,65000,0,60000,0] #caso base para 20mil iniciais
-        self.volTurb=[0,55000,65000,0,60000,0] #caso base
+        #self.volTurb=[0,55000,65000,0,60000,0] #caso base
+        self.varTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_timeStamps)]
+        self.varTurb=np.array(self.varTurb)
+        self.volTurb=[int(random.gauss(maxTurb/2, self.sigma)) for x in range(n_timeStamps)]
         self.volTurb=np.array(self.volTurb)
+        self.volTurb=self.volTurb+self.varTurb
+        self.volTurb[n_timeStamps-1]=0
         
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
         self.powerAbu=np.array(self.powerAbu)
-        
+
         #carga
         self.carga=carga
         self.carga=np.array(self.carga)
         #definição da parte térmica
         self.powerTer=self.carga-self.powerAbu
-        #print(powerTer)
 
     def score(self):
         self.custoTer=[int(2000+120*x+1.6*x*x) for x in self.powerTer]
@@ -67,9 +85,9 @@ class Evolu:
             i=i+1
         
 
-        score = int(custo + penalidade)
+        self._score = int(custo + penalidade)
         #print("O score eh: ",score)
-        return  score
+        return  self._score
 
     def mutate(self):
         self.varTurb=[int(random.gauss(self.mu, self.sigma)) for x in self.volTurb]
@@ -82,10 +100,10 @@ class Evolu:
 
         self.powerTer=self.carga-self.powerAbu
 #'''  
-#'''
+'''
 class Swap:
-    def __init__(self,mu,n_pop,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
-        self.n_pop=n_pop
+    def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
+        self.n_timeStamps=n_timeStamps
         self.mu=mu
         self.sigma=sigma
         self.aflu = aflu
@@ -97,7 +115,7 @@ class Swap:
         self.minTer=minTer
         self.carga=carga
 
-        self.volTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_pop)]
+        self.volTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_timeStamps)]
         self.volTurb=np.array(self.volTurb)
         self.volTurb[5]=0
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
@@ -105,7 +123,7 @@ class Swap:
         self.powerTer=self.carga-self.powerAbu
         
     def mutate(self):
-        self.volTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_pop)]
+        self.volTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_timeStamps)]
         self.volTurb=np.array(self.volTurb)
         self.volTurb[5]=0
         #print(self.volTurb)
@@ -155,51 +173,69 @@ class Swap:
 #'''
 
 if __name__ == '__main__':
-    case=1
-    n_pop=6
+    case=0
+    n_timeStamps=6
     mu=0 
     sigma=10000 
-    aflu = [80000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial
+    aflu = [90000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial
     k = 10/3
     maxTurb=80000
     maxRes=150000
     maxTer=80000
     minTer=0
     carga = [70,130,140,50,110,0]
-    n_rep=100
+    n_pop=40
     n_gen=10
+    n_pop_half=int(n_pop/2)
     #'''
     if case == 0:
-        adam = Evolu(mu,n_pop,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) 
-        pai=copy.copy(adam)
+        generation=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
+        son_list=[]#2pop
+
         for k in range(n_gen):
-            filho=[copy.copy(pai) for i in range(n_rep)]
-            #print(filho[3].mu)
-            best_score=pai.score()
-            #print("Score Pai: ",best_score,"\n\n")
-            for i in range(n_rep):
-                filho[i].mutate()
-                #print(filho[i].volTurb)
-                ponto=filho[i].score()
-                #print(ponto)
-                if ponto < best_score:
-                    pai=copy.copy(filho[i])
-                    best_score=ponto
+            #print("\n")
+            #print("\n\n", generation[0].score())
+            score_book=[]
+            score_book=[generation[i].score() for i in range(n_pop)]
+            bubble_sort(score_book)
+            #print("\n\n", score_book)
+            score_book=np.array(score_book)
+            son_list=[]
+            count=0
+            for i in range(n_pop_half):
+                for j in range(n_pop):
+                    if generation[j]._score == score_book[0]:
+                        best_of_generation=copy.copy(generation[j])
+                    if generation[j]._score == score_book[i] and count<n_pop_half:
+                        count=count+1
+                        dad=copy.copy(generation[j])
+                        son=copy.copy(generation[j])
+                        son.mutate()
+                        son_list.append(dad)
+                        son_list.append(son)
+                        #print("\n\n", son_list[0].score())
+                        
+                        #print("\n\n", son_list[i].score())
+            #score_book_son=[son_list[i].score() for i in range(n_pop)]
+            #print("\n\n", score_book_son)
+            generation=[]
+            generation=[copy.copy(son_list[i]) for i in range(n_pop)]
             
-        print("\n Volume Turbinado: ",pai.volTurb)
-        print("\n Potencia Turbinada: ",pai.powerAbu)
-        print("\n Potencia Térmica: ",pai.powerTer)
-        print("\n Sobra de Água: ",pai.sobra_abu)
+        print("\n Volume Turbinado: ",best_of_generation.volTurb)
+        print("\n Potencia Turbinada: ",best_of_generation.powerAbu)
+        print("\n Potencia Térmica: ",best_of_generation.powerTer)
+        print("\n Sobra de Água: ",best_of_generation.sobra_abu)
+        print("\n Pontuação: ",best_of_generation._score)
     #'''
-    #'''
+    '''
     if case == 1:
         mu =40000
         sigma = 20000
-        explorer=[Swap(mu,n_pop,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_rep)]
+        explorer=[Swap(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         signal=0
 
         for k in range(n_gen):
-            for i in range(n_rep):
+            for i in range(n_pop):
                 explorer[i].mutate()
                 ponto=explorer[i].score()
                 if  (k == 0 and i == 0):
@@ -208,7 +244,7 @@ if __name__ == '__main__':
                     signal=1
                     best_explorer=i
                     best_score=ponto
-            for p in range(n_rep):
+            for p in range(n_pop):
                 explorer[p]=copy.copy(explorer[best_explorer])
             if  signal == 1:
                 super_explorer=copy.copy(explorer[best_explorer])
