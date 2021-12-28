@@ -184,24 +184,37 @@ if __name__ == '__main__':
     maxTer=80000
     minTer=0
     carga = [70,130,140,50,110,0]
-    n_pop=40
+    n_pop=50
     n_gen=10
     n_pop_half=int(n_pop/2)
     #'''
     if case == 0:
         generation=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         son_list=[]#2pop
-
         for k in range(n_gen):
-            #print("\n")
-            #print("\n\n", generation[0].score())
+            new_generation=[]
+            for j in range(n_pop):
+                dad=copy.copy(generation[j])
+                son=copy.copy(generation[j])
+                son.mutate()
+                new_generation.append(dad)
+                new_generation.append(son)
             score_book=[]
-            score_book=[generation[i].score() for i in range(n_pop)]
+            score_book=[new_generation[i].score() for i in range(2*n_pop)]
             bubble_sort(score_book)
-            #print("\n\n", score_book)
             score_book=np.array(score_book)
-            son_list=[]
             count=0
+            son_list=[]
+            for i in range(n_pop):
+                for j in range(2*n_pop):
+                    if new_generation[j]._score == score_book[0]:
+                        best_of_generation=copy.copy(new_generation[j])
+                    if new_generation[j]._score == score_book[i] and count<n_pop:
+                        count=count+1
+                        fit=copy.copy(new_generation[j])
+                        son_list.append(fit)
+            generation=[copy.copy(son_list[p]) for p in range(n_pop)]
+            '''
             for i in range(n_pop_half):
                 for j in range(n_pop):
                     if generation[j]._score == score_book[0]:
@@ -213,14 +226,10 @@ if __name__ == '__main__':
                         son.mutate()
                         son_list.append(dad)
                         son_list.append(son)
-                        #print("\n\n", son_list[0].score())
-                        
-                        #print("\n\n", son_list[i].score())
-            #score_book_son=[son_list[i].score() for i in range(n_pop)]
-            #print("\n\n", score_book_son)
+
             generation=[]
             generation=[copy.copy(son_list[i]) for i in range(n_pop)]
-            
+            '''
         print("\n Volume Turbinado: ",best_of_generation.volTurb)
         print("\n Potencia Turbinada: ",best_of_generation.powerAbu)
         print("\n Potencia Térmica: ",best_of_generation.powerTer)
