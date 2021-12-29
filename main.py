@@ -204,7 +204,7 @@ class Swap:
 #'''  
 
 if __name__ == '__main__':
-    case=2
+    case=0 # caso 0 -> evolucionario_elitista    caso1 -> evolucionario_torneio    caso 2 -> enxame de particulas
     n_timeStamps=6
     mu=0 
     sigma=10000 
