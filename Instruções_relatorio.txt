@@ -1,0 +1,32 @@
+->Introdução
+*falar sobrer importância do problema hidro-térmico
+*falar o que acontece bom estratégias de máxima turbinação e minima turbinação
+*falar sobre como a Computação Evolucionária pode ajudar
+
+->Apresentação do Problema
+*Mostrar quais as informações dadas e quais aquelas que temos acesso a modificar
+*Explicar o porquê da variavel de decisão ser o volume despachado
+*Explicar o calculo da pontuação de cada caso (mostrar a parte _init_() e score() da classe Evolu do Algoritmo)
+*Explicar a penalização de acontece se o caso for impossível
+
+->Abordagens da Programação evolucionária(Evolu)
+*Breve resumo Programação evolucionária
+*Necessário mutações (explicar mutate())
+*Torneio x Elitista (mostrar como implementamos)
+*O impacto de mudar a n_pop e o impacto de mudar n_gen
+*O impacto de mudar mu e sigma (pesquisa global x pesquisa local)
+*O impacto de mudar a afluência inicial (ou a afluência horária)
+*Qual a gestão hídrica adequada?
+
+->Abordagens por Enxame de Partículas (Swarm)
+*Breve resumo Enxame de Partículas
+*Seleção de partículas (e veriaveis envolvidas)
+*Escolhendo A, B e C
+*breve sobre os efeitos de mudar as mesmas coisas que mudou em Evolu
+
+->Conclusão
+*Comparativo de eficiência entre swarm e evolu
+*Por que usar algoritmos evolucionários?
+
+->Anexos
+*Todo meu algoritmo
