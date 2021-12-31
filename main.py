@@ -99,7 +99,8 @@ class Evolu:
         self.powerAbu=np.array(self.powerAbu)
 
         self.powerTer=self.carga-self.powerAbu
-'''  
+#'''  
+
 class Swarm:
     def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
         self.best_explorer = []
@@ -204,11 +205,11 @@ class Swarm:
 #'''  
 
 if __name__ == '__main__':
-    case=0 # caso 0 -> evolucionario_elitista    caso1 -> evolucionario_torneio    caso 2 -> enxame de particulas
+    case=1 # caso 0 -> evolucionario_elitista    caso1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
     n_timeStamps=6
     mu=0 
     sigma=10000 
-    aflu = [90000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial
+    aflu = [50000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial
     k = 10/3
     maxTurb=80000
     maxRes=150000
@@ -219,7 +220,7 @@ if __name__ == '__main__':
     n_gen=100
     n_pop_half=int(n_pop/2)
     #'''
-    if case == 0:
+    if case == 0 or case==-1:
         generation=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         son_list=[]#2pop
         for k in range(n_gen):
@@ -245,54 +246,78 @@ if __name__ == '__main__':
                         fit=copy.copy(new_generation[j])
                         son_list.append(fit)
             generation=[copy.copy(son_list[p]) for p in range(n_pop)]
-            
-        print("\n Volume Turbinado: ",best_of_generation.volTurb)
-        print("\n Potencia Turbinada: ",best_of_generation.powerAbu)
-        print("\n Potencia Térmica: ",best_of_generation.powerTer)
-        print("\n Sobra de Água: ",best_of_generation.sobra_abu)
-        print("\n Pontuação: ",best_of_generation._score)
+        print("\n\n Best case found: ")
+        print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_of_generation.mu,"      Sigma: ",best_of_generation.sigma)    
+        print(" Afluência Inicial: ",best_of_generation.aflu)
+        print(" Volume Turbinado: ",best_of_generation.volTurb)
+        print(" Potencia Turbinada: ",best_of_generation.powerAbu)
+        print(" Potencia Térmica: ",best_of_generation.powerTer)
+        print(" Sobra de Água: ",best_of_generation.sobra_abu)
+        print(" Pontuação: ",best_of_generation._score)
+        print("\n")
     #'''
 
-    '''
-    if case == 1:
-        generation=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
+    #'''
+    if case == 1 or case==-1:
+        generation_torneio=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
+        best_of_generation_torneio=copy.copy(generation_torneio[0])
+        k=0
+        i=0
+        j=0
+        p=0
+        m=0
         for k in range(n_gen):
-            new_generation=[]
-            position_list=[]
-            position_list=[i for i in range(2*n_pop)]
+            new_generation_torneio=[]
+            position_list_torneio=[]
+            position_list_torneio=[i for i in range(2*n_pop)]
             for j in range(n_pop):
-                dad=copy.copy(generation[j])
-                son=copy.copy(generation[j])
-                son.mutate()
-                new_generation.append(dad)
-                new_generation.append(son)
-            score_book=[]
-            score_book=[new_generation[i].score() for i in range(2*n_pop)]
-            score_book=np.array(score_book)
-            son_list=[]
+                dad_torneio=copy.copy(generation_torneio[j])
+                son_torneio=copy.copy(generation_torneio[j])
+                son_torneio.mutate()
+                new_generation_torneio.append(dad_torneio)
+                new_generation_torneio.append(son_torneio)
+            score_book_torneio=[]
+            score_book_torneio=[new_generation_torneio[i].score() for i in range(2*n_pop)]
+            score_book_torneio=np.array(score_book_torneio)
+            son_torneio_list=[]
             for i in range(n_pop):
-                pos1=random.choice(position_list)
-                position_list.remove(pos1)
-                pos2=random.choice(position_list)
-                position_list.remove(pos2)
-                if new_generation[pos1]._score < new_generation[pos2]._score:
-                    fit=copy.copy(new_generation[pos1])
-                    son_list.append(fit)
+                pos1=random.choice(position_list_torneio)
+                position_list_torneio.remove(pos1)
+                pos2=random.choice(position_list_torneio)
+                position_list_torneio.remove(pos2)
+                if new_generation_torneio[pos1]._score < new_generation_torneio[pos2]._score:
+                    fit=copy.copy(new_generation_torneio[pos1])
+                    son_torneio_list.append(fit)
                 else:
-                    fit=copy.copy(new_generation[pos2])
-                    son_list.append(fit)
-            generation=[copy.copy(son_list[p]) for p in range(n_pop)]
+                    fit=copy.copy(new_generation_torneio[pos2])
+                    son_torneio_list.append(fit)
+            generation_torneio=[copy.copy(son_torneio_list[p]) for p in range(n_pop)]
         for m in range(n_pop):
-            print("Volume Turbinado: ",generation[m].volTurb)
-            print("Potencia Turbinada: ",generation[m].powerAbu)
-            print("Potencia Térmica: ",generation[m].powerTer)
-            print("Sobra de Água: ",generation[m].sobra_abu)
-            print("Pontuação: ",generation[m]._score)
+            '''
+            print("Volume Turbinado: ",generation_torneio[m].volTurb)
+            print("Potencia Turbinada: ",generation_torneio[m].powerAbu)
+            print("Potencia Térmica: ",generation_torneio[m].powerTer)
+            print("Sobra de Água: ",generation_torneio[m].sobra_abu)
+            print("Pontuação: ",generation_torneio[m]._score)
+            '''
+            best_of_generation_torneio.score()
+            if generation_torneio[m]._score < best_of_generation_torneio._score:
+                best_of_generation_torneio=copy.copy(generation_torneio[m])
+
+        print("\n\n Best case found: ")
+        print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_of_generation_torneio.mu,"      Sigma: ",best_of_generation_torneio.sigma)    
+        print(" Afluência Inicial: ",best_of_generation_torneio.aflu)
+        print(" Volume Turbinado: ",best_of_generation_torneio.volTurb)
+        print(" Potencia Turbinada: ",best_of_generation_torneio.powerAbu)
+        print(" Potencia Térmica: ",best_of_generation_torneio.powerTer)
+        print(" Sobra de Água: ",best_of_generation_torneio.sobra_abu)
+        print(" Pontuação: ",best_of_generation_torneio._score)
+        print("\n")
     #'''
 
 
-    '''
-    if case == 2:
+    #'''
+    if case == 2 or case==-1:
         explorer=[Swarm(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         signal=0
         best_explorer = copy.copy(explorer[0])
@@ -307,9 +332,13 @@ if __name__ == '__main__':
                     #best_score = explorer[i].score()
                     best_explorer = copy.copy(explorer[i])
 
-        print("\n Volume Turbinado: ",best_explorer.volTurb)
-        print("\n Potencia Turbinada: ",best_explorer.powerAbu)
-        print("\n Potencia Térmica: ",best_explorer.powerTer)
-        print("\n Sobra de Água: ",best_explorer.sobra_abu)
-        print("Pontuação: ",best_explorer._score)
+        print("\n\n Best case found: ")
+        print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_explorer.mu,"      Sigma: ",best_explorer.sigma)    
+        print(" Afluência Inicial: ",best_explorer.aflu)
+        print(" Volume Turbinado: ",best_explorer.volTurb)
+        print(" Potencia Turbinada: ",best_explorer.powerAbu)
+        print(" Potencia Térmica: ",best_explorer.powerTer)
+        print(" Sobra de Água: ",best_explorer.sobra_abu)
+        print(" Pontuação: ",best_explorer._score)
+        print("\n")
     #'''
