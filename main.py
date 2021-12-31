@@ -2,6 +2,10 @@
 import random
 import numpy as np
 import copy
+import time
+
+case=2 # caso 0 -> evolucionario_elitista    caso1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
+start=time.time()
 
 #'''
 def bubble_sort(our_list):
@@ -205,7 +209,6 @@ class Swarm:
 #'''  
 
 if __name__ == '__main__':
-    case=1 # caso 0 -> evolucionario_elitista    caso1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
     n_timeStamps=6
     mu=0 
     sigma=10000 
@@ -246,7 +249,8 @@ if __name__ == '__main__':
                         fit=copy.copy(new_generation[j])
                         son_list.append(fit)
             generation=[copy.copy(son_list[p]) for p in range(n_pop)]
-        print("\n\n Best case found: ")
+        end=time.time()
+        print("\n\n Melhor caso com Programação Evolucionária Elitista: ")
         print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_of_generation.mu,"      Sigma: ",best_of_generation.sigma)    
         print(" Afluência Inicial: ",best_of_generation.aflu)
         print(" Volume Turbinado: ",best_of_generation.volTurb)
@@ -254,6 +258,7 @@ if __name__ == '__main__':
         print(" Potencia Térmica: ",best_of_generation.powerTer)
         print(" Sobra de Água: ",best_of_generation.sobra_abu)
         print(" Pontuação: ",best_of_generation._score)
+        print(" Tempo de execução do algiritmo: ",(end-start))
         print("\n")
     #'''
 
@@ -303,8 +308,8 @@ if __name__ == '__main__':
             best_of_generation_torneio.score()
             if generation_torneio[m]._score < best_of_generation_torneio._score:
                 best_of_generation_torneio=copy.copy(generation_torneio[m])
-
-        print("\n\n Best case found: ")
+        end=time.time()
+        print("\n\n Melhor caso com Programação Evolucionária Torneio: ")
         print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_of_generation_torneio.mu,"      Sigma: ",best_of_generation_torneio.sigma)    
         print(" Afluência Inicial: ",best_of_generation_torneio.aflu)
         print(" Volume Turbinado: ",best_of_generation_torneio.volTurb)
@@ -312,6 +317,7 @@ if __name__ == '__main__':
         print(" Potencia Térmica: ",best_of_generation_torneio.powerTer)
         print(" Sobra de Água: ",best_of_generation_torneio.sobra_abu)
         print(" Pontuação: ",best_of_generation_torneio._score)
+        print(" Tempo de execução do algiritmo: ",(end-start))
         print("\n")
     #'''
 
@@ -331,8 +337,8 @@ if __name__ == '__main__':
                 if explorer[i].score() <= best_explorer.score():
                     #best_score = explorer[i].score()
                     best_explorer = copy.copy(explorer[i])
-
-        print("\n\n Best case found: ")
+        end=time.time()
+        print("\n\n Melhor caso com Enxame de Partículas: ")
         print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_explorer.mu,"      Sigma: ",best_explorer.sigma)    
         print(" Afluência Inicial: ",best_explorer.aflu)
         print(" Volume Turbinado: ",best_explorer.volTurb)
@@ -340,5 +346,6 @@ if __name__ == '__main__':
         print(" Potencia Térmica: ",best_explorer.powerTer)
         print(" Sobra de Água: ",best_explorer.sobra_abu)
         print(" Pontuação: ",best_explorer._score)
+        print(" Tempo de execução do algiritmo: ",(end-start))
         print("\n")
     #'''
