@@ -5,17 +5,17 @@ import copy
 
 #'''
 def bubble_sort(our_list):
-    has_swapped = True
+    has_Swarmped = True
 
     num_of_iterations = 0
 
-    while(has_swapped):
-        has_swapped = False
+    while(has_Swarmped):
+        has_Swarmped = False
         for i in range(len(our_list) - num_of_iterations - 1):
             if our_list[i] > our_list[i+1]:
-                # Swap
+                # Swarm
                 our_list[i], our_list[i+1] = our_list[i+1], our_list[i]
-                has_swapped = True
+                has_Swarmped = True
         num_of_iterations += 1
 #'''
 class Evolu:
@@ -99,8 +99,8 @@ class Evolu:
         self.powerAbu=np.array(self.powerAbu)
 
         self.powerTer=self.carga-self.powerAbu
-#'''  
-class Swap:
+'''  
+class Swarm:
     def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
         self.best_explorer = []
         self.n_timeStamps=n_timeStamps
@@ -253,7 +253,7 @@ if __name__ == '__main__':
         print("\n Pontuação: ",best_of_generation._score)
     #'''
 
-    #'''
+    '''
     if case == 1:
         generation=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         for k in range(n_gen):
@@ -291,9 +291,9 @@ if __name__ == '__main__':
     #'''
 
 
-    #'''
+    '''
     if case == 2:
-        explorer=[Swap(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
+        explorer=[Swarm(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         signal=0
         best_explorer = copy.copy(explorer[0])
         best_explorer.score()
