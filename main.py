@@ -22,6 +22,7 @@ def bubble_sort(our_list):
                 has_Swarmped = True
         num_of_iterations += 1
 #'''
+
 class Evolu:
     def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
         self.n_timeStamps=n_timeStamps
@@ -64,26 +65,26 @@ class Evolu:
                 custo=custo+j
             else:
                 custo=custo+j
-                penalidade=penalidade+100000000000000000
+                penalidade=penalidade+10000000000000+(custo)^2
             i=i+1
         custo_med=custo/i
         sobra=0
         i=0
         for j in self.volTurb:
-            curr_abu=self.aflu[i]+sobra
-            if (j >= 0 and j<=curr_abu and j<=80000):
-                sobra=curr_abu-j
+            self.curr_abu=self.aflu[i]+sobra
+            if (j >= 0 and j<=self.curr_abu and j<=80000):
+                sobra=self.curr_abu-j
             else:
-                #print(j,curr_abu)
-                sobra=curr_abu-j
-                penalidade=penalidade+100000000000000
-            if curr_abu > 150000:
-                curr_abu=150000
+                #print(j,self.curr_abu)
+                sobra=self.curr_abu-j
+                penalidade=penalidade+100000000000000+(j)^2
+            if self.curr_abu > 150000:
+                self.curr_abu=150000
                 penalidade=penalidade+100000000000000
             if i == 5 :
                 #not sure if this is right
-                x=int(curr_abu*(10/3)/3600)
-                self.sobra_abu=curr_abu
+                x=int(self.curr_abu*(10/3)/3600)
+                self.sobra_abu=self.curr_abu
                 poupanca=x*custo_med
                 custo=custo-poupanca
             i=i+1
@@ -151,27 +152,30 @@ class Swarm:
                 custo=custo+j
             else:
                 custo=custo+j
-                penalidade=penalidade+100000000000000000
+                penalidade=penalidade+10000+(custo)^2
             i=i+1
         custo_med=custo/i
         sobra=0
         i=0
+        self.abu=[]
         for j in self.volTurb:
-            curr_abu=self.aflu[i]+sobra
-            if (j >= 0 and j<=curr_abu and j<=80000):
-                sobra=curr_abu-j
+            j=int(j)
+            self.curr_abu=self.aflu[i]+sobra
+            if (j >= 0 and j<=self.curr_abu and j<=80000):
+                sobra=self.curr_abu-j
             else:
-                #print(j,curr_abu)
-                sobra=curr_abu-j
-                penalidade=penalidade+100000000000000
-            if curr_abu > 150000:
-                curr_abu=150000
-                penalidade=penalidade+100000000000000
+                #print(j,self.curr_abu)
+                sobra=self.curr_abu-j
+                penalidade=float(penalidade+1000+(j*j))
+            if self.curr_abu > 150000:
+                self.curr_abu=150000
+                penalidade=penalidade+1000
+            self.abu.append(self.curr_abu)
             if i == 5 :
                 #not sure if this is right
-                x=int(curr_abu*(10/3)/3600)
-                self.sobra_abu=curr_abu
-                poupanca=x*custo_med
+                x=int(self.curr_abu*(10/3)/3600)
+                self.sobra_abu=self.curr_abu
+                poupanca=x*custo_med*(7/10)
                 custo=custo-poupanca
             i=i+1
         
@@ -191,8 +195,8 @@ class Swarm:
         self.volTurb[5]=0
         
         self.A=self.A*(9/10)
-        B=random.uniform(0, 1)
-        C=random.uniform(0, 1)
+        B=random.uniform(0, 1)*(1-self.A)
+        C=random.uniform(0, 1)*(1-self.A)
         #print(self.volTurb,self.A,self.previous_vol_turb,self.best_gene._score,global_gene._score)
         self.volTurb=self.volTurb+self.A*(self.volTurb-self.previous_vol_turb)+B*(self.best_gene.volTurb-self.volTurb)+C*(global_gene.volTurb-self.volTurb)
         self.volTurb[0]=int(self.volTurb[0])
@@ -224,17 +228,21 @@ if __name__ == '__main__':
     n_pop_half=int(n_pop/2)
     #'''
     if case == 0 or case==-1:
+        #Programação Evolucionaria
         generation=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         son_list=[]#2pop
         for k in range(n_gen):
             new_generation=[]
             for j in range(n_pop):
+                #Duplicar
                 dad=copy.copy(generation[j])
                 son=copy.copy(generation[j])
+                #Mutar
                 son.mutate()
                 new_generation.append(dad)
                 new_generation.append(son)
             score_book=[]
+            #Avaliar
             score_book=[new_generation[i].score() for i in range(2*n_pop)]
             bubble_sort(score_book)
             score_book=np.array(score_book)
@@ -245,6 +253,7 @@ if __name__ == '__main__':
                     if new_generation[j]._score == score_book[0]:
                         best_of_generation=copy.copy(new_generation[j])
                     if new_generation[j]._score == score_book[i] and count<n_pop:
+                        #Selecionar
                         count=count+1
                         fit=copy.copy(new_generation[j])
                         son_list.append(fit)
@@ -264,6 +273,7 @@ if __name__ == '__main__':
 
     #'''
     if case == 1 or case==-1:
+        #Enxame de Partículas
         generation_torneio=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         best_of_generation_torneio=copy.copy(generation_torneio[0])
         k=0
@@ -334,6 +344,7 @@ if __name__ == '__main__':
                 explorer[i].mutate(best_explorer)
                 book_of_explorers.append(explorer[i])
                 #print("\n\n Score: ",explorer[i].score(), best_explorer._score)
+                #print(explorer[i].score())
                 if explorer[i].score() <= best_explorer.score():
                     #best_score = explorer[i].score()
                     best_explorer = copy.copy(explorer[i])
@@ -342,6 +353,7 @@ if __name__ == '__main__':
         print(" População: ",n_pop,"\tGeração: ",n_gen,"\n Mu: ",best_explorer.mu,"      Sigma: ",best_explorer.sigma)    
         print(" Afluência Inicial: ",best_explorer.aflu)
         print(" Volume Turbinado: ",best_explorer.volTurb)
+        print(" Albufeira: ",best_explorer.abu)
         print(" Potencia Turbinada: ",best_explorer.powerAbu)
         print(" Potencia Térmica: ",best_explorer.powerTer)
         print(" Sobra de Água: ",best_explorer.sobra_abu)
