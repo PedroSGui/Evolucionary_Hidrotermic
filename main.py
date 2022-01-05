@@ -4,7 +4,9 @@ import numpy as np
 import copy
 import time
 
-case=2 # caso 0 -> evolucionario_elitista    caso1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
+case=2 # caso 0 -> evolucionario_elitista    caso 1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
+
+
 start=time.time()
 
 #'''
@@ -23,6 +25,7 @@ def bubble_sort(our_list):
         num_of_iterations += 1
 #'''
 
+#''' 
 class Evolu:
     def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
         self.n_timeStamps=n_timeStamps
@@ -106,6 +109,7 @@ class Evolu:
         self.powerTer=self.carga-self.powerAbu
 #'''  
 
+#''' 
 class Swarm:
     def __init__(self,mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga):  
         self.best_explorer = []
@@ -198,7 +202,13 @@ class Swarm:
         B=random.uniform(0, 1)*(1-self.A)
         C=random.uniform(0, 1)*(1-self.A)
         #print(self.volTurb,self.A,self.previous_vol_turb,self.best_gene._score,global_gene._score)
-        self.volTurb=self.volTurb+self.A*(self.volTurb-self.previous_vol_turb)+B*(self.best_gene.volTurb-self.volTurb)+C*(global_gene.volTurb-self.volTurb)
+        
+        inercia=self.A*(self.volTurb-self.previous_vol_turb)
+        memoria=B*(self.best_gene.volTurb-self.volTurb)
+        cooperacao=C*(global_gene.volTurb-self.volTurb)
+
+        self.volTurb=self.volTurb+inercia+memoria+cooperacao
+
         self.volTurb[0]=int(self.volTurb[0])
         self.volTurb[1]=int(self.volTurb[1])
         self.volTurb[2]=int(self.volTurb[2])
@@ -215,16 +225,16 @@ class Swarm:
 if __name__ == '__main__':
     n_timeStamps=6
     mu=0 
-    sigma=10000 
-    aflu = [50000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial
+    sigma=10000  # pode mexer
+    aflu = [80000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial        # pode mexer no primeiro
     k = 10/3
     maxTurb=80000
     maxRes=150000
     maxTer=80000
     minTer=0
     carga = [70,130,140,50,110,0]
-    n_pop=50
-    n_gen=100
+    n_pop=50 #pode mexer
+    n_gen=100 #pode mexer
     n_pop_half=int(n_pop/2)
     #'''
     if case == 0 or case==-1:
@@ -330,7 +340,6 @@ if __name__ == '__main__':
         print(" Tempo de execução do algiritmo: ",(end-start))
         print("\n")
     #'''
-
 
     #'''
     if case == 2 or case==-1:
