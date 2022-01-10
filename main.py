@@ -39,8 +39,6 @@ class Evolu:
         self.maxTer=maxTer
         self.minTer=minTer
         #definção da parte hidrica
-        #self.volTurb=[0,55000,65000,0,60000,0] #caso base para 20mil iniciais
-        #self.volTurb=[0,55000,65000,0,60000,0] #caso base
         self.varTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_timeStamps)]
         self.varTurb=np.array(self.varTurb)
         self.volTurb=[int(random.gauss(maxTurb/2, self.sigma)) for x in range(n_timeStamps)]
@@ -95,7 +93,6 @@ class Evolu:
         
 
         self._score = int(custo + penalidade)
-        #print("O score eh: ",score)
         return  self._score
 
     def mutate(self):
@@ -125,8 +122,6 @@ class Swarm:
         self.maxTer=maxTer
         self.minTer=minTer
         #definção da parte hidrica
-        #self.volTurb=[0,55000,65000,0,60000,0] #caso base para 20mil iniciais
-        #self.volTurb=[0,55000,65000,0,60000,0] #caso base
         self.varTurb=[int(random.gauss(self.mu, self.sigma)) for x in range(n_timeStamps)]
         self.varTurb=np.array(self.varTurb)
         self.volTurb=[int(random.gauss(maxTurb/2, self.sigma)) for x in range(n_timeStamps)]
@@ -169,7 +164,6 @@ class Swarm:
             if (j >= 0 and j<=self.curr_abu and j<=80000):
                 sobra=self.curr_abu-j
             else:
-                #print(j,self.curr_abu)
                 sobra=self.curr_abu-j
                 penalidade=float(penalidade+1000+(j*j))
             if self.curr_abu > 150000:
@@ -177,7 +171,6 @@ class Swarm:
                 penalidade=penalidade+1000
             self.abu.append(self.curr_abu)
             if i == 5 :
-                #not sure if this is right
                 x=int(self.curr_abu*(10/3)/3600)
                 self.sobra_abu=self.curr_abu
                 poupanca=x*custo_med*(7/10)
@@ -189,7 +182,6 @@ class Swarm:
         if self._score <= previous_score:
             self.best_score_in_this_gene= self._score
             self.best_gene=copy.copy(self)
-        #print("O score eh: ",score)
         return  self._score
 
     def mutate(self,global_gene):
@@ -226,7 +218,7 @@ if __name__ == '__main__':
     n_timeStamps=6
     mu=0 
     sigma=20000  # pode mexer
-    aflu = [50000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial        # pode mexer no primeiro
+    aflu = [50000,60000,70000,20000,10000,50000]
     k = 10/3
     maxTurb=80000
     maxRes=150000
@@ -352,10 +344,7 @@ if __name__ == '__main__':
             for i in range(n_pop):
                 explorer[i].mutate(best_explorer)
                 book_of_explorers.append(explorer[i])
-                #print("\n\n Score: ",explorer[i].score(), best_explorer._score)
-                #print(explorer[i].score())
                 if explorer[i].score() <= best_explorer.score():
-                    #best_score = explorer[i].score()
                     best_explorer = copy.copy(explorer[i])
         end=time.time()
         print("\n\n Melhor caso com Enxame de Partículas: ")
