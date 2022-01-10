@@ -1,6 +1,6 @@
 ->Introdução
 *falar sobrer importância do problema hidro-térmico
-*falar o que acontece bom estratégias de máxima turbinação e minima turbinação
+*falar o que acontece com estratégias de máxima turbinação e minima turbinação
 *falar sobre como a Computação Evolucionária pode ajudar
 
 ->Apresentação do Problema
@@ -14,7 +14,7 @@
 *Necessário mutações (explicar mutate())
 *Torneio x Elitista (mostrar como implementamos)
 *O impacto de mudar a n_pop e o impacto de mudar n_gen
-*O impacto de mudar mu e sigma (pesquisa global x pesquisa local)
+*O impacto de mudar sigma (pesquisa global x pesquisa local)
 *O impacto de mudar a afluência inicial (ou a afluência horária)
 *Qual a gestão hídrica adequada?
 

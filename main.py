@@ -4,7 +4,7 @@ import numpy as np
 import copy
 import time
 
-case=2 # caso 0 -> evolucionario_elitista    caso 1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
+case=1 # caso 0 -> evolucionario_elitista    caso 1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
 
 
 start=time.time()
@@ -58,6 +58,7 @@ class Evolu:
         self.powerTer=self.carga-self.powerAbu
 
     def score(self):
+        #calculo do custo termico
         self.custoTer=[int(2000+120*x+1.6*x*x) for x in self.powerTer]
         self.custoTer= np.array(self.custoTer)
         i=0
@@ -71,6 +72,8 @@ class Evolu:
                 penalidade=penalidade+10000000000000+(custo)^2
             i=i+1
         custo_med=custo/i
+
+        #calculo do custo hidrico
         sobra=0
         i=0
         for j in self.volTurb:
@@ -78,14 +81,12 @@ class Evolu:
             if (j >= 0 and j<=self.curr_abu and j<=80000):
                 sobra=self.curr_abu-j
             else:
-                #print(j,self.curr_abu)
                 sobra=self.curr_abu-j
                 penalidade=penalidade+100000000000000+(j)^2
             if self.curr_abu > 150000:
                 self.curr_abu=150000
                 penalidade=penalidade+100000000000000
             if i == 5 :
-                #not sure if this is right
                 x=int(self.curr_abu*(10/3)/3600)
                 self.sobra_abu=self.curr_abu
                 poupanca=x*custo_med
@@ -201,8 +202,7 @@ class Swarm:
         self.A=self.A*(9/10)
         B=random.uniform(0, 1)*(1-self.A)
         C=random.uniform(0, 1)*(1-self.A)
-        #print(self.volTurb,self.A,self.previous_vol_turb,self.best_gene._score,global_gene._score)
-        
+
         inercia=self.A*(self.volTurb-self.previous_vol_turb)
         memoria=B*(self.best_gene.volTurb-self.volTurb)
         cooperacao=C*(global_gene.volTurb-self.volTurb)
@@ -225,15 +225,15 @@ class Swarm:
 if __name__ == '__main__':
     n_timeStamps=6
     mu=0 
-    sigma=10000  # pode mexer
-    aflu = [80000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial        # pode mexer no primeiro
+    sigma=20000  # pode mexer
+    aflu = [50000,60000,70000,20000,10000,50000]  #mudar o primeiro é a agua inicial        # pode mexer no primeiro
     k = 10/3
     maxTurb=80000
     maxRes=150000
     maxTer=80000
     minTer=0
     carga = [70,130,140,50,110,0]
-    n_pop=50 #pode mexer
+    n_pop=100 #pode mexer
     n_gen=100 #pode mexer
     n_pop_half=int(n_pop/2)
     #'''
@@ -283,25 +283,22 @@ if __name__ == '__main__':
 
     #'''
     if case == 1 or case==-1:
-        #Enxame de Partículas
         generation_torneio=[Evolu(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         best_of_generation_torneio=copy.copy(generation_torneio[0])
-        k=0
-        i=0
-        j=0
-        p=0
-        m=0
         for k in range(n_gen):
             new_generation_torneio=[]
             position_list_torneio=[]
             position_list_torneio=[i for i in range(2*n_pop)]
             for j in range(n_pop):
+                #Duplicar
                 dad_torneio=copy.copy(generation_torneio[j])
                 son_torneio=copy.copy(generation_torneio[j])
+                #Mutar
                 son_torneio.mutate()
                 new_generation_torneio.append(dad_torneio)
                 new_generation_torneio.append(son_torneio)
             score_book_torneio=[]
+            #Avaliar
             score_book_torneio=[new_generation_torneio[i].score() for i in range(2*n_pop)]
             score_book_torneio=np.array(score_book_torneio)
             son_torneio_list=[]
@@ -310,6 +307,8 @@ if __name__ == '__main__':
                 position_list_torneio.remove(pos1)
                 pos2=random.choice(position_list_torneio)
                 position_list_torneio.remove(pos2)
+                #Selecionar
+                #Esse é o Torneio
                 if new_generation_torneio[pos1]._score < new_generation_torneio[pos2]._score:
                     fit=copy.copy(new_generation_torneio[pos1])
                     son_torneio_list.append(fit)
@@ -343,6 +342,7 @@ if __name__ == '__main__':
 
     #'''
     if case == 2 or case==-1:
+        #Enxame de Partículas
         explorer=[Swarm(mu,n_timeStamps,sigma,aflu,k,maxTurb,maxRes,maxTer,minTer,carga) for i in range(n_pop)]
         signal=0
         best_explorer = copy.copy(explorer[0])
