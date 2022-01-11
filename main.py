@@ -4,7 +4,7 @@ import numpy as np
 import copy
 import time
 
-case=1 # caso 0 -> evolucionario_elitista    caso 1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
+case=2 # caso 0 -> evolucionario_elitista    caso 1 -> evolucionario_torneio    caso 2 -> enxame de particulas caso -1 -> mostra tudo
 
 
 start=time.time()
@@ -44,7 +44,6 @@ class Evolu:
         self.volTurb=[int(random.gauss(maxTurb/2, self.sigma)) for x in range(n_timeStamps)]
         self.volTurb=np.array(self.volTurb)
         self.volTurb=self.volTurb+self.varTurb
-        self.volTurb[n_timeStamps-1]=0
         
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
         self.powerAbu=np.array(self.powerAbu)
@@ -84,7 +83,7 @@ class Evolu:
             if self.curr_abu > 150000:
                 self.curr_abu=150000
                 penalidade=penalidade+100000000000000
-            if i == 5 :
+            if i == n_timeStamps-1 :
                 x=int(self.curr_abu*(10/3)/3600)
                 self.sobra_abu=self.curr_abu
                 poupanca=x*custo_med
@@ -99,7 +98,6 @@ class Evolu:
         self.varTurb=[int(random.gauss(self.mu, self.sigma)) for x in self.volTurb]
         self.varTurb=np.array(self.varTurb)
         self.volTurb=self.volTurb+self.varTurb
-        self.volTurb[5]=0
 
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
         self.powerAbu=np.array(self.powerAbu)
@@ -127,7 +125,6 @@ class Swarm:
         self.volTurb=[int(random.gauss(maxTurb/2, self.sigma)) for x in range(n_timeStamps)]
         self.volTurb=np.array(self.volTurb)
         self.volTurb=self.volTurb+self.varTurb
-        self.volTurb[n_timeStamps-1]=0
         
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
         self.powerAbu=np.array(self.powerAbu)
@@ -170,7 +167,7 @@ class Swarm:
                 self.curr_abu=150000
                 penalidade=penalidade+1000
             self.abu.append(self.curr_abu)
-            if i == 5 :
+            if i == n_timeStamps-1 :
                 x=int(self.curr_abu*(10/3)/3600)
                 self.sobra_abu=self.curr_abu
                 poupanca=x*custo_med*(7/10)
@@ -189,7 +186,6 @@ class Swarm:
         self.varTurb=np.array(self.varTurb)
         self.previous_vol_turb=self.volTurb #Xj(k-1)
         self.volTurb=self.volTurb+self.varTurb #Xj(k)
-        self.volTurb[5]=0
         
         self.A=self.A*(9/10)
         B=random.uniform(0, 1)*(1-self.A)
@@ -200,13 +196,7 @@ class Swarm:
         cooperacao=C*(global_gene.volTurb-self.volTurb)
 
         self.volTurb=self.volTurb+inercia+memoria+cooperacao
-
-        self.volTurb[0]=int(self.volTurb[0])
-        self.volTurb[1]=int(self.volTurb[1])
-        self.volTurb[2]=int(self.volTurb[2])
-        self.volTurb[3]=int(self.volTurb[3])
-        self.volTurb[4]=int(self.volTurb[4])
-        self.volTurb[5]=int(self.volTurb[5])
+        self.volTurb=[int(self.volTurb[i]) for i in range(n_timeStamps)]
 
         self.powerAbu = [int(x*self.k/3600) for x in self.volTurb]
         self.powerAbu=np.array(self.powerAbu)
@@ -215,16 +205,16 @@ class Swarm:
 #'''  
 
 if __name__ == '__main__':
-    n_timeStamps=6
+    n_timeStamps=5
     mu=0 
-    sigma=20000  # pode mexer
-    aflu = [50000,60000,70000,20000,10000,50000]
+    sigma=10000  # pode mexer
+    aflu = [80000,70000,20000,10000,50000]
     k = 10/3
     maxTurb=80000
     maxRes=150000
     maxTer=80000
     minTer=0
-    carga = [70,130,140,50,110,0]
+    carga = [70,130,140,50,110]
     n_pop=100 #pode mexer
     n_gen=100 #pode mexer
     n_pop_half=int(n_pop/2)
